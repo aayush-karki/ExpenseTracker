@@ -17,11 +17,11 @@ const schema = z.object({
 
 type ExpenseFormData = z.infer<typeof schema>;
 
-interface ExpenseFormProc {
+interface ExpenseFormProps {
 	categorys: string[];
 }
 
-const ExpenseForm = ({ categorys }: ExpenseFormProc) => {
+const ExpenseForm = ({ categorys }: ExpenseFormProps) => {
 	const {
 		register,
 		handleSubmit,
