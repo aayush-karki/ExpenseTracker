@@ -1,46 +1,91 @@
 import React from "react";
+import { useForm } from "react-hook-form";
+import { FieldValues } from "react-hook-form/dist/types";
+import { z } from "zod";
+import { Schema, TypeOf } from "zod/lib";
+import { zodResolver } from "@hookform/resolvers/zod";
+
+const schema = z.object({
+	itemAmount: z
+		.number({ invalid_type_error: "Amount feild is required" })
+		.nonnegative(),
+	itemCategory: z.string(),
+	itemDescription: z.string().min(1, {
+		message: "Item description should not be empty",
+	}),
+});
+
+type ExpenseFormData = z.infer<typeof schema>;
 
 interface ExpenseFormProc {
 	categorys: string[];
 }
 
 const ExpenseForm = ({ categorys }: ExpenseFormProc) => {
+	const {
+		register,
+		handleSubmit,
+		formState: { errors },
+	} = useForm<ExpenseFormData>({ resolver: zodResolver(schema) });
+
+	const onFromSubmit = (data: FieldValues) => console.log(data);
+
 	return (
-		<form>
+		<form onSubmit={handleSubmit(onFromSubmit)}>
 			<div className="md-5">
-				<label htmlFor="item-description" className="form-label">
+				<label htmlFor="itemDescription" className="form-label">
 					Description
 				</label>
 				<input
-					id="item-description"
+					{...register("itemDescription")}
+					id="itemDescription"
 					type="text"
 					className="form-control"
 				/>
+				{errors.itemDescription && (
+					<p className="text-danger">
+						{errors.itemDescription.message}
+					</p>
+				)}
 			</div>
 			<div className="md-5">
-				<label htmlFor="item-amount" className="form-label">
+				<label htmlFor="itemAmount" className="form-label">
 					Amount
 				</label>
 				<input
-					id="item-amount"
+					{...register("itemAmount", { valueAsNumber: true })}
+					id="itemAmount"
 					type="number"
 					className="form-control"
 				/>
+				{errors.itemAmount && (
+					<p className="text-danger">{errors.itemAmount.message}</p>
+				)}
 			</div>
 			<div className="md-5">
-				<label htmlFor="item-category" className="form-label">
+				<label htmlFor="itemCategory" className="form-label">
 					Category
 				</label>
 				<select
-					name="item-category"
-					id="item-category"
-					className="form-control"
+					{...register("itemCategory")}
+					name="itemCategory"
+					id="itemCategory"
+					className="form-select"
 				>
-					{categorys.map((category) => (
-						<option value={category}>{category}</option>
+					{categorys.map((category, index) => (
+						<option
+							value={category}
+							key={category}
+							selected={index == 0 ? true : false}
+						>
+							{category}
+						</option>
 					))}
 				</select>
 			</div>
+			<button className="btn btn-primary" type="submit">
+				Submit
+			</button>
 		</form>
 	);
 };
