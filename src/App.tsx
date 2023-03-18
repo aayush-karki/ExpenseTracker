@@ -2,18 +2,22 @@ import { useState } from "react";
 import ExpenseFilter from "./components/ExpenseFilter";
 import Form from "./components/ExpenseForm";
 import ExpenseList from "./components/ExpenseList";
+import categories from "./categories";
 
 function App() {
-	const categoryList = ["Groceries", "Utilities", "Entertainment"];
-
 	const [selectedCategory, setSelectedCategory] = useState("");
 
 	const [expenses, setExpenses] = useState([
-		{ id: 1, description: "aaa", amount: 10, category: "Utilities" },
-		{ id: 2, description: "bbb", amount: 10, category: "Utilities" },
-		{ id: 3, description: "ccc", amount: 10, category: "Utilities" },
-		{ id: 4, description: "ddd", amount: 10, category: "Utilities" },
-		{ id: 4, description: "ddd", amount: 10, category: "Groceries" },
+		{
+			id: 1,
+			description: "electricity",
+			amount: 10,
+			category: "Utilities",
+		},
+		{ id: 2, description: "internet", amount: 10, category: "Utilities" },
+		{ id: 3, description: "movie", amount: 5, category: "Entertainment" },
+		{ id: 4, description: "rice", amount: 10, category: "Groceries" },
+		{ id: 5, description: "chips", amount: 16, category: "Groceries" },
 	]);
 
 	const visibleExpenses = selectedCategory
@@ -22,8 +26,20 @@ function App() {
 
 	return (
 		<div>
-			<div className="mb-3">
-				<Form categorys={categoryList}></Form>
+			<div className="mb-5">
+				<Form
+					onFormSubmit={(expense) =>
+						setExpenses([
+							...expenses,
+							{
+								id: expenses.length + 1,
+								description: expense.itemDescription,
+								amount: expense.itemAmount,
+								category: expense.itemCategory,
+							},
+						])
+					}
+				/>
 			</div>
 			<div className="mb-3">
 				<ExpenseFilter
